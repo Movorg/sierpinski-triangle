@@ -9,5 +9,3 @@ A program for constructing a Sierpinski triangle by the chaos method
 + Repeat from step 3.
 
 This method is also called the chaos game, and is an example of an iterated function system. You can start from any point outside or inside the triangle, and it would eventually form the Sierpiński Gasket with a few leftover points (if the starting point lies on the outline of the triangle, there are no leftover points).
-
-https://en.wikipedia.org/wiki/Sierpi%C5%84ski_triangle
