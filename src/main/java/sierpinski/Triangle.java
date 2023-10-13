@@ -162,10 +162,10 @@ class Triangle extends JFrame {
     }
 
     static class ColorPoint {
-        private int x;
-        private int y;
-        private int size;
-        private Color color;
+        private final int x;
+        private final int y;
+        private final int size;
+        private final Color color;
 
         public ColorPoint(int x, int y, int size, Color color) {
             this.x = x;
