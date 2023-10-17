@@ -1,8 +1,6 @@
 package sierpinski;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -22,13 +20,13 @@ class Triangle extends JFrame {
     List<Integer> massiveX = new CopyOnWriteArrayList<>();
     List<Integer> massiveY = new CopyOnWriteArrayList<>();
 
-    JLabel jcounter = new JLabel(String.valueOf(0));
+    JLabel jCounter = new JLabel(String.valueOf(0));
 
     void count() {
         String str;
         counter += 1;
         str = Integer.toString(counter);
-        jcounter.setText(str);
+        jCounter.setText(str);
     }
 
     StartGame startGame;
@@ -36,66 +34,55 @@ class Triangle extends JFrame {
     Triangle() {
         setTitle("Sierpinski Triangle");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(900, 800));
 
         points = new CopyOnWriteArrayList<>();
-        pointColor = Color.BLACK;
+        pointColor = Color.WHITE;
         pane = new DrawingPane();
 
         JPanel topPanel = new JPanel();
         JButton colorButton = new JButton();
         colorButton.setBackground(pointColor);
-        colorButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                pointColor = JColorChooser.showDialog(Triangle.this,
-                        "Choose a color:", pointColor);
-                colorButton.setBackground(pointColor);
-            }
+        colorButton.addActionListener(e -> {
+            pointColor = JColorChooser.showDialog(Triangle.this,
+                    "Choose a color:", pointColor);
+            colorButton.setBackground(pointColor);
         });
 
-        colorButton.setPreferredSize(new Dimension(40, 40));
-        pointSize = new JSlider(3, 20, 3);
-        speedThread = new JSlider(1, 20, 1);
+        colorButton.setPreferredSize(new Dimension(30, 30));
+        pointSize = new JSlider(1, 4, 2);
+        pointSize.setPreferredSize(new Dimension(80, 30));
+        speedThread = new JSlider(-50, -1, -50);
+        speedThread.setPreferredSize(new Dimension(80, 30));
 
         JButton startButton = new JButton("Start");
-        startButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (massiveX.size() < 4) {
-                    JOptionPane.showMessageDialog(null,
-                            "Set the required number of points!",
-                            "Error!",
-                            JOptionPane.WARNING_MESSAGE);
-                } else {
-                    startGame = new StartGame();
-                    Thread thr = new Thread(startGame);
-                    thr.start();
-                }
+        startButton.addActionListener(e -> {
+            if (massiveX.size() < 4) {
+                JOptionPane.showMessageDialog(null,
+                        "Set the required number of points!",
+                        "Error!",
+                        JOptionPane.WARNING_MESSAGE);
+            } else {
+                startGame = new StartGame();
+                Thread thr = new Thread(startGame);
+                thr.start();
             }
         });
 
         JButton stopButton = new JButton("Stop");
-        stopButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                startGame.stop();
-                points.clear();
-                pane.repaint();
-                massiveX.clear();
-                massiveY.clear();
-            }
+        stopButton.addActionListener(e -> {
+            startGame.stop();
+            points.clear();
+            pane.repaint();
+            massiveX.clear();
+            massiveY.clear();
         });
 
         JButton pauseButton = new JButton("Pause");
-        pauseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                startGame.suspended();
-            }
-        });
+        pauseButton.addActionListener(e -> startGame.suspended());
 
         JButton continueButton = new JButton("Continue");
-        continueButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                startGame.resume();
-            }
-        });
+        continueButton.addActionListener(e -> startGame.resume());
 
         topPanel.add(new JLabel("Color:"));
         topPanel.add(colorButton);
@@ -107,25 +94,20 @@ class Triangle extends JFrame {
         topPanel.add(stopButton);
         topPanel.add(pauseButton);
         topPanel.add(continueButton);
-        topPanel.add(new JLabel("Number of points"));
-        topPanel.add(jcounter);
+        topPanel.add(new JLabel("Number of points:"));
+        topPanel.add(jCounter);
         add(pane);
         add(topPanel, BorderLayout.NORTH);
         pack();
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new Triangle().setVisible(true);
-            }
-        });
+        SwingUtilities.invokeLater(() -> new Triangle().setVisible(true));
     }
 
-    class DrawingPane extends JComponent {
+    class DrawingPane extends JPanel {
         public DrawingPane() {
-            setPreferredSize(new Dimension(1200, 400));
+            setBackground(new Color(22,27,34));
             setBorder(new LineBorder(Color.GRAY));
             addMouseListener(new MouseAdapter() {
                 @Override
@@ -156,7 +138,7 @@ class Triangle extends JFrame {
                 int x = p.getX();
                 int y = p.getY();
                 int size = p.getSize();
-                g2.fillOval(x - size / 2, y - size / 2, size, size);
+                g2.fillRect(x, y, size, size);
             }
         }
     }
@@ -192,9 +174,6 @@ class Triangle extends JFrame {
     }
 
     static class RandomPoint {
-        int min;
-        int max;
-
         static int rnd(int min, int max) {
             max -= min;
             return (int) (Math.random() * ++max) + min;
@@ -254,7 +233,7 @@ class Triangle extends JFrame {
                     ColorPoint point = new Triangle.ColorPoint(n_point_x, n_point_y, Triangle.pointSize.getValue(), Triangle.pointColor);
                     points.add(point);
                     pane.repaint();
-                    Thread.sleep(Triangle.speedThread.getValue() * 5);
+                    Thread.sleep(Triangle.speedThread.getValue() * (-1));
                 }
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
